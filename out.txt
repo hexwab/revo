@@ -1,0 +1,159 @@
+.play
+     1E00   78         SEI
+     1E01   A9 FF      LDA #&FF
+     1E03   8D 43 FE   STA &FE43
+     1E06   A2 03      LDX #&03
+.initloop
+     1E08   BD EF 1E   LDA &1EEF,X
+     1E0B   49 11      EOR #&11
+     1E0D   20 F5 1E   JSR &1EF5
+     1E10   A9 00      LDA #&00
+     1E12   20 F5 1E   JSR &1EF5
+     1E15   CA         DEX
+     1E16   10 F0      BPL &1E08
+     1E18   AD 04 02   LDA &0204
+     1E1B   8D 67 1E   STA &1E67
+     1E1E   AD 05 02   LDA &0205
+     1E21   8D 68 1E   STA &1E68
+     1E24   A9 61      LDA #&61
+     1E26   8D 04 02   STA &0204
+     1E29   A9 1E      LDA #&1E
+     1E2B   8D 05 02   STA &0205
+     1E2E   A9 7F      LDA #&7F
+     1E30   8D 6E FE   STA &FE6E
+     1E33   A9 40      LDA #&40
+     1E35   8D 6B FE   STA &FE6B
+     1E38   A9 01      LDA #&01
+     1E3A   8D 64 FE   STA &FE64
+     1E3D   8D 65 FE   STA &FE65
+     1E40   A9 C0      LDA #&C0
+     1E42   8D 6E FE   STA &FE6E
+     1E45   20 4A 1E   JSR &1E4A
+     1E48   58         CLI
+     1E49   60         RTS
+.init
+     1E4A   A9 00      LDA #&00
+     1E4C   85 80      STA &80
+     1E4E   A9 20      LDA #&20
+     1E50   85 81      STA &81
+     1E52   A9 43      LDA #&43
+     1E54   85 82      STA &82
+Macro set_timer:
+     1E56   A9 E9      LDA #&E9
+     1E58   8D 66 FE   STA &FE66
+     1E5B   A9 3A      LDA #&3A
+     1E5D   8D 67 FE   STA &FE67
+End macro set_timer
+     1E60   60         RTS
+.irq
+     1E61   AD 6D FE   LDA &FE6D
+     1E64   30 03      BMI &1E69
+.oldirq
+     1E66   4C EE EE   JMP &EEEE
+.uservia
+     1E69   2D 6E FE   AND &FE6E
+     1E6C   29 40      AND #&40
+     1E6E   F0 F6      BEQ &1E66
+     1E70   AD 64 FE   LDA &FE64
+     1E73   8E E5 1E   STX &1EE5
+     1E76   8C E7 1E   STY &1EE7
+.do_squirt
+     1E79   A0 FF      LDY #&FF
+     1E7B   8C 43 FE   STY &FE43
+.lastx
+     1E7E   A2 00      LDX #&00
+     1E80   C8         INY
+.loop
+     1E81   B1 80      LDA (&80),Y
+     1E83   4A         LSR A
+     1E84   4A         LSR A
+     1E85   4A         LSR A
+     1E86   4A         LSR A
+Macro strobe:
+     1E87   1D EF 1E   ORA &1EEF,X
+     1E8A   8D 4F FE   STA &FE4F
+     1E8D   A9 00      LDA #&00
+     1E8F   8D 40 FE   STA &FE40
+     1E92   BD F2 1E   LDA &1EF2,X
+     1E95   AA         TAX
+     1E96   A9 08      LDA #&08
+     1E98   EA         NOP
+     1E99   EA         NOP
+     1E9A   EA         NOP
+     1E9B   8D 40 FE   STA &FE40
+End macro strobe
+     1E9E   B1 80      LDA (&80),Y
+     1EA0   29 0F      AND #&0F
+     1EA2   EA         NOP
+     1EA3   EA         NOP
+     1EA4   EA         NOP
+Macro strobe:
+     1EA5   1D EF 1E   ORA &1EEF,X
+     1EA8   8D 4F FE   STA &FE4F
+     1EAB   A9 00      LDA #&00
+     1EAD   8D 40 FE   STA &FE40
+     1EB0   BD F2 1E   LDA &1EF2,X
+     1EB3   AA         TAX
+     1EB4   A9 08      LDA #&08
+     1EB6   EA         NOP
+     1EB7   EA         NOP
+     1EB8   EA         NOP
+     1EB9   8D 40 FE   STA &FE40
+End macro strobe
+     1EBC   C8         INY
+     1EBD   10 2C      BPL &1EEB
+     1EBF   8E 7F 1E   STX &1E7F
+     1EC2   A5 80      LDA &80
+     1EC4   49 80      EOR #&80
+     1EC6   85 80      STA &80
+     1EC8   D0 02      BNE &1ECC
+     1ECA   E6 81      INC &81
+.noinc
+     1ECC   A6 82      LDX &82
+     1ECE   E0 34      CPX #&34
+     1ED0   D0 0A      BNE &1EDC
+Macro set_timer:
+     1ED2   A9 BA      LDA #&BA
+     1ED4   8D 66 FE   STA &FE66
+     1ED7   A9 34      LDA #&34
+     1ED9   8D 67 FE   STA &FE67
+End macro set_timer
+.notweak
+     1EDC   CA         DEX
+     1EDD   86 82      STX &82
+     1EDF   D0 03      BNE &1EE4
+.done
+     1EE1   20 4A 1E   JSR &1E4A
+.ret
+.xtmp
+     1EE4   A2 00      LDX #&00
+.ytmp
+     1EE6   A0 00      LDY #&00
+     1EE8   A5 FC      LDA &FC
+     1EEA   40         RTI
+.loop2
+     1EEB   EA         NOP
+     1EEC   4C 81 1E   JMP &1E81
+Macro PAGE_ALIGN_FOR_SIZE:
+End macro PAGE_ALIGN_FOR_SIZE
+.mask
+     1EEF   D0
+     1EF0   B0
+     1EF1   90
+Macro PAGE_ALIGN_FOR_SIZE:
+End macro PAGE_ALIGN_FOR_SIZE
+.inc
+     1EF2   01
+     1EF3   02
+     1EF4   00
+.strobe2
+     1EF5   8D 4F FE   STA &FE4F
+     1EF8   A9 00      LDA #&00
+     1EFA   8D 40 FE   STA &FE40
+     1EFD   08         PHP
+     1EFE   28         PLP
+     1EFF   A9 08      LDA #&08
+     1F01   8D 40 FE   STA &FE40
+     1F04   60         RTS
+.end
+Saving file 'revo'
